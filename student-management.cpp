@@ -49,17 +49,21 @@ class Student {
     string toString() {
         return to_string(id) + "," + name + "," + email + "," + to_string(age) + "," + to_string(grade);
     }
+
+    void printStudent() {
+        cout <<"\t\t"<< id << "\t\t"<< name << "\t\t" << email << "\t\t" << age << "\t\t" << grade << endl;
+    }
 };
 
 Student getStudentDataFromUser() {
     Student std = Student();
 
-    cout << "Enter student name: ";
+    cout << "\t\tEnter student name: ";
     cin >> std.name;
-    cout << "Enter student email: ";
+    cout << "\t\tEnter student email: ";
     cin >> std.email;
-    cout << "Enter student age: ";
-    cin >> std.age;
+    cout << "\t\tEnter student age: ";
+    cin >> std.age;    
 
     std.setGrade(0);
     std.id = generate_id();
@@ -97,7 +101,7 @@ vector<Student> readStudentsFromFile(){
     file.open("students.csv", ios::in);
 
     if (!file) {
-        cout << "File not found" << endl;
+        cout << "\t\tERROR: File not found" << endl;
     } else {
         string line;
         int i = 0;
@@ -170,45 +174,64 @@ bool deleteStudent(int id){
 }
 
 int main() {
-    vector < Student > students;
+    vector <Student> students;
+    //student management system
+    //user menu
 
-    int n;
-    cout << "How many students do you want to enter? ";
-    cin >> n;
+    int choice,studentId;
+    do {
+        cout << "\n\t__________________________________________________________________________\n\n";
+        cout << "\t\t1. ADD STUDENT"<<endl;
+        cout << "\t\t2. UPDATE STUDENT"<<endl;
+        cout << "\t\t3. DELETE STUDENT"<<endl;
+        cout << "\t\t4. SHOW ALL STUDENTS"<<endl;
+        cout << "\t\t5. EXIT"<<endl;
+        cout << "\n\t\tEnter your choice: ";
+        cin >> choice;
+        cout <<endl<<endl;
 
-    for (int i = 0; i < n; i++) {
-        cout << "\n_________________________________________________________\n";
-        cout << endl << "\t\t\t STUDENT No " << i + 1 << endl << endl;
-        students.push_back(getStudentDataFromUser());
-        cout << "_________________________________________________________" << endl << endl;
-    }
+        switch (choice) {
+            case 1:
+                students.clear();
+                students.push_back(getStudentDataFromUser());
+                writeStudentsInFile(students);
+                break;
+            case 2:
+                cout << "\t\tEnter student id: ";
+                cin >> studentId;
+                if (updateStudent(studentId)) {
+                    cout << "\n\t\tSTUDENT UPDATED SUCCESSFULLY" << endl;
+                } else {
+                    cout << "\n\t\tSTUDENT NOT FOUND" << endl;
+                }
+                break;
+            case 3:
+                cout << "\t\tEnter student id: ";
+                cin >> studentId;
+                if (deleteStudent(studentId)) {
+                    cout << "\n\t\tSTUDENT DELETED SUCCESSFULLY" << endl;
+                } else {
+                    cout << "\n\t\tSTUDENT NOT FOUND" << endl;
+                }
+                break;
+            case 4:
+                students = readStudentsFromFile();
 
-    writeStudentsInFile(students);
-
-    vector<Student> stds = readStudentsFromFile();
-    //print stds
-    for (int i = 0; i < stds.size(); i++) {
-        Student std = stds.at(i);
-        cout << std.toString() << endl;
-    }
-
-    int id;
-    cout << "Enter student id to update: ";
-    cin >> id;
-    if(updateStudent(id)){
-        cout << "Student updated" << endl;
-    }else{
-        cout << "Student not found" << endl;
-    }
-
-    cout << "Enter student id to delete: ";
-    cin >> id;
-    if(deleteStudent(id)){
-        cout << "Student deleted" << endl;
-    }else{
-        cout << "Student not found" << endl;
-    }
-
+                if(students.size() == 0){
+                    cout << "\n\t\tNO STUDENTS FOUND" << endl;
+                } else {
+                    cout << "\n\t\tID\t\tNAME\t\tEMAIL\t\t\t\tAGE\t\tGRADE" << endl << endl;
+                    for (int i = 0; i < students.size(); i++) {
+                        students.at(i).printStudent();
+                    }
+                }
+                break;
+            case 5:
+                break;
+            default:
+                cout << "\n\t\tINVALID CHOICE" << endl;
+        }
+    } while (choice != 5);
 
     return 0;
 }
