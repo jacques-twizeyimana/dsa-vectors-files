@@ -62,6 +62,7 @@ Student getStudentDataFromUser() {
     cin >> std.age;
 
     std.setGrade(0);
+    std.id = generate_id();
     return std;
 }
 
@@ -87,6 +88,7 @@ void writeStudentsInFile(vector<Student> students) {
 
     file.close();
 }
+
 
 vector<Student> readStudentsFromFile(){
     vector<Student> students;
@@ -127,6 +129,33 @@ vector<Student> readStudentsFromFile(){
     return students;
 }
 
+
+bool updateStudent(int id) {
+    fstream file;
+
+    vector <Student> students = readStudentsFromFile();
+    cout << (students.size());
+
+    for (int i = 1; i < students.size(); i++) {
+        cout << students.at(i).id << endl;
+        if (students.at(i).id == id) {
+            // update student
+            Student updatedStudent = getStudentDataFromUser();
+            updatedStudent.id = id;
+            students.at(i) = updatedStudent;
+
+            //  update file
+            file.open("students.csv", ios::out);
+            file << "id,name,email,age,grade" << endl;
+            file.close();
+            writeStudentsInFile(students);
+            return true;
+        }
+    }
+    return false;
+
+}
+
 int main() {
     vector < Student > students;
 
@@ -148,6 +177,15 @@ int main() {
     for (int i = 0; i < stds.size(); i++) {
         Student std = stds.at(i);
         cout << std.toString() << endl;
+    }
+
+    int id;
+    cout << "Enter student id to update: ";
+    cin >> id;
+    if(updateStudent(id)){
+        cout << "Student updated" << endl;
+    }else{
+        cout << "Student not found" << endl;
     }
 
     return 0;
