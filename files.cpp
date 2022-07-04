@@ -131,29 +131,42 @@ vector<Student> readStudentsFromFile(){
 
 
 bool updateStudent(int id) {
-    fstream file;
 
     vector <Student> students = readStudentsFromFile();
-    cout << (students.size());
 
-    for (int i = 1; i < students.size(); i++) {
-        cout << students.at(i).id << endl;
-        if (students.at(i).id == id) {
+    for (int i = 0; i < students.size(); i++) {
+        if (students.at(i).id == id) {            
             // update student
             Student updatedStudent = getStudentDataFromUser();
             updatedStudent.id = id;
             students.at(i) = updatedStudent;
 
-            //  update file
-            file.open("students.csv", ios::out);
-            file << "id,name,email,age,grade" << endl;
-            file.close();
+            //delete file and write updated students to file
+            remove("students.csv");
             writeStudentsInFile(students);
             return true;
         }
     }
     return false;
 
+}
+
+bool deleteStudent(int id){
+    fstream file;
+    vector<Student> students = readStudentsFromFile();
+
+    for (int i = 0; i < students.size(); i++) {
+        if (students.at(i).id == id) {
+            //delete student at this index
+            students.erase(students.begin() + i);
+
+            // delete file and insert updated students
+            remove("students.csv");
+            writeStudentsInFile(students);
+            return true;
+        }
+    }
+    return false;
 }
 
 int main() {
@@ -187,6 +200,15 @@ int main() {
     }else{
         cout << "Student not found" << endl;
     }
+
+    cout << "Enter student id to delete: ";
+    cin >> id;
+    if(deleteStudent(id)){
+        cout << "Student deleted" << endl;
+    }else{
+        cout << "Student not found" << endl;
+    }
+
 
     return 0;
 }
