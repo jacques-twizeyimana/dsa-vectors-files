@@ -1,21 +1,44 @@
 #include<iostream>
-#include<fstream>
+#include<bits/stdc++.h>
+#include<cstring>
 #include<vector>
+#include<fstream>
 
 using namespace std;
 
+//generate random id
+int generate_id()
+{
+    int id;
+    srand(time(NULL));
+    id = rand() % 1000000;
+    return id;
+}
+
+
 class Student {
     public:
+        int id;
         string name;
-    string email;
-    int age;
-    double grade;
+        string email;
+        int age;
+        double grade;
 
     Student() {}
     Student(string givenName, string givenEmail, int ageN) {
         name = givenName;
         email = givenEmail;
         age = ageN;
+        id = generate_id();
+        grade = 0;
+
+    }
+
+    Student(int userId,string givenName, string givenEmail, int ageN) {
+        name = givenName;
+        email = givenEmail;
+        age = ageN;
+        id = userId;
         grade = 0;
     }
 
@@ -24,7 +47,7 @@ class Student {
     }
 
     string toString() {
-        return name + "," + email + "," + to_string(age) + "," + to_string(grade);
+        return to_string(id) + "," + name + "," + email + "," + to_string(age) + "," + to_string(grade);
     }
 };
 
@@ -50,7 +73,7 @@ void writeStudentsInFile(vector<Student> students) {
     if (!file) {
         file.close();
         file.open("students.csv", ios::app);
-        file << "name,email,age,grade" << endl;
+        file << "id,name,email,age,grade" << endl;
     } else {
         file.close();
         file.open("students.csv", ios::app);
@@ -65,41 +88,67 @@ void writeStudentsInFile(vector<Student> students) {
     file.close();
 }
 
-void readStudentsFromFile(){
+vector<Student> readStudentsFromFile(){
+    vector<Student> students;
+
     fstream file;
     file.open("students.csv", ios::in);
 
     if (!file) {
         cout << "File not found" << endl;
-    } 
-    else{
+    } else {
         string line;
-        
-        while(getline(file,line)){          
-            cout << line << endl;
+        int i = 0;
+
+        while (getline(file, line)) {
+            //skip first line
+            if (i == 0) {
+                i++;
+                continue;
+            }
+            //split line by comma
+            stringstream ss(line);
+            string id,name, email, age, grade;
+
+            getline(ss, id, ',');
+            getline(ss, name, ',');
+            getline(ss, email, ',');
+            getline(ss, age, ',');
+            getline(ss, grade, ',');
+
+            Student std = Student(stoi(id), name, email, stoi(age));
+            std.setGrade(stoi(grade));
+            students.push_back(std);
+            i++;
         }
     }
 
     file.close();
+    return students;
 }
 
 int main() {
     vector < Student > students;
 
-    // int n;
-    // cout << "How many students do you want to enter? ";
-    // cin >> n;
+    int n;
+    cout << "How many students do you want to enter? ";
+    cin >> n;
 
-    // for (int i = 0; i < n; i++) {
-    //     cout << "\n_________________________________________________________\n";
-    //     cout << endl << "\t\t\t STUDENT No " << i + 1 << endl << endl;
-    //     students.push_back(getStudentDataFromUser());
-    //     cout << "_________________________________________________________" << endl << endl;
-    // }
+    for (int i = 0; i < n; i++) {
+        cout << "\n_________________________________________________________\n";
+        cout << endl << "\t\t\t STUDENT No " << i + 1 << endl << endl;
+        students.push_back(getStudentDataFromUser());
+        cout << "_________________________________________________________" << endl << endl;
+    }
 
-    // writeStudentsInFile(students);
+    writeStudentsInFile(students);
 
-    readStudentsFromFile();
+    vector<Student> stds = readStudentsFromFile();
+    //print stds
+    for (int i = 0; i < stds.size(); i++) {
+        Student std = stds.at(i);
+        cout << std.toString() << endl;
+    }
 
     return 0;
 }
